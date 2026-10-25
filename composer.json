@@ -1,5 +1,5 @@
 {
-	"name": "stephane/symfony-starter",
+	"name": "habeuk/symfony-starter",
 	"description": "Starter Symfony 8.1 pour mes projets (API + JWT + Mailer + AI)",
     "type": "project",
     "license": "proprietary",
