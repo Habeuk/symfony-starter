@@ -1,0 +1,31 @@
+# phpstan.neon
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+        - vendor/habeuk
+    phpVersion: 80400
+
+    # Doctrine
+    doctrine:
+        objectManagerLoader: null
+
+    # Symfony
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+
+    # Options strictes (noms corrects)
+    checkUninitializedProperties: true
+    reportUnmatchedIgnoredErrors: true
+    reportMaybes: true
+
+    # Exclure des dossiers
+    excludePaths:
+        analyseAndScan:
+            - tests/_support/*
+            - var/cache/*
+
+    # Ignorer certaines erreurs (optionnel)
+    ignoreErrors:
+        # PHP 8.4 property hooks (pas encore totalement supportés)

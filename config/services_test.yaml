@@ -1,0 +1,6 @@
+services:
+    # Rend le mapper public uniquement en environnement de test,
+    # afin de pouvoir verifier le mapping Entite <-> DTO depuis PHPUnit.
+    Symfony\Component\ObjectMapper\ObjectMapperInterface:
+        public: true
+        alias: object_mapper

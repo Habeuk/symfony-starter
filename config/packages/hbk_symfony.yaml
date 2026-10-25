@@ -1,0 +1,6 @@
+# config/packages/hbk_symfony.yaml dans l'application
+hbk_symfony:
+    role_class: 'App\Enum\Role'
+    email_notification:
+        email_value: '%env(NOTIFICATION_EMAIL_VALUE)%'
+        email_name: '%env(NOTIFICATION_EMAIL_NAME)%'
