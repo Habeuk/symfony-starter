@@ -18,7 +18,7 @@ security:
         # #############################################################
         # Firewall pour l'API login
         login_api:
-            pattern: ^/api/login_check
+            pattern: ^/api/(login_check|token/refresh)
             stateless: true
             # jwt: ~
             json_login:
@@ -27,31 +27,33 @@ security:
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            refresh_jwt:
+                check_path: /api/token/refresh
             # Verifie si le compte de l'utilisateur est activé'.'
             user_checker: Habeuk\HbkSymfony\Security\UserChecker
             # Pour le développement, on peut laisser sans authentification
-            # security: false 
+            # security: false
         # protection de toutes les routes derriere l'API.
         ###############
-        # authorise la recuperation du forumulaire de d'inscription. 
+        # authorise la recuperation du formulaire de d'inscription.
         register_form:
             pattern: ^/api/form-fields/UserAnonymousUser/create
             stateless: true
             security: false
-        
+
         ###############
-        # authorise la creation de compte 
+        # authorise la creation de compte
         register_api:
             pattern: ^/api/user/register
             stateless: true
             security: false
-            
+
         # authorise la verification d'email
         verify_email_api:
             pattern: ^/api/verify/email
             stateless: true
             security: false
-            
+
         # require le token pour toutes les autres routes.
         api:
             pattern: ^/api
@@ -59,6 +61,10 @@ security:
             jwt: ~
             # Verifie si le compte de l'utilisateur est activé'.'
             user_checker: Habeuk\HbkSymfony\Security\UserChecker
+            # deconnexion.
+            logout:
+                path: api_token_invalidate
+
         # #############################################################
         main:
             lazy: true
@@ -92,7 +98,8 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: [ROLE_ADMIN] }   
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: [ROLE_ADMIN] }
         - { path: ^/api, roles: [ROLE_USER] }
 
 when@test:

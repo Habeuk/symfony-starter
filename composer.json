@@ -44,6 +44,7 @@
 		"doctrine/doctrine-bundle": "^3.3",
 		"doctrine/doctrine-migrations-bundle": "^4.0",
 		"doctrine/orm": "^3.7",
+		"gesdinet/jwt-refresh-token-bundle": "^3.0",
 		"habeuk/ai-agent-bundle": "1.x-dev",
 		"habeuk/debug": "dev-3x",
 		"habeuk/file-uploader-bundle": "1.x-dev",

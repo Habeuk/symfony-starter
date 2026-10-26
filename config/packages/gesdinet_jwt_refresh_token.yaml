@@ -1,0 +1,20 @@
+gesdinet_jwt_refresh_token:
+    refresh_token_class: App\Entity\RefreshToken
+
+    ttl: 2592000                # 30 jours
+    single_use: true            # rotation à chaque refresh
+    ttl_update: true            # prolonge la validité quand on refresh
+
+    hash_tokens:
+        enabled: true           # la base ne stocke que le hash
+
+    cookie:
+        enabled: true
+        same_site: lax         # "strict" en prod protège contre le CSRF, "none" en developpement.
+        path: /                 # plus tard, il faudra limiter le cookie à "path: /api/token/refresh", cela reduit la surface d'attaque.
+        http_only: true         # ← le point clé : JS ne peut pas lire le cookie
+        secure: true            # ⚠️ en dev HTTP local, mettre à false
+        remove_token_from_body: false   # le token ne fuit pas dans le JSON
+
+    return_expiration: true     # le front sait quand la session expire
+                                # (utile car il ne peut pas lire le cookie)

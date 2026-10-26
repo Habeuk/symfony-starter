@@ -15,6 +15,11 @@ use App\Enum\ScopeEnum;
 use Habeuk\HbkSymfony\Shared\Doctrine\BaseUser;
 use Doctrine\DBAL\Types\Types;
 use Habeuk\HbkSymfony\Enum\RoleInterface;
+use Habeuk\HbkSymfony\Shared\Doctrine\Traits\ {
+  TimestampableTrait,
+  StatusTrait,
+  UuidTrait
+};
 
 #[Map(target: UserDto::class)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -38,7 +43,10 @@ use Habeuk\HbkSymfony\Enum\RoleInterface;
 ])]
 #[ORM\HasLifecycleCallbacks]
 class User extends BaseUser {
-
+  use TimestampableTrait;
+  use StatusTrait;
+  use UuidTrait;
+  
   /**
    *
    * @var array<Role>
@@ -47,7 +55,7 @@ class User extends BaseUser {
   private array $roles = [
     Role::ROLE_USER
   ];
-
+  
   /**
    *
    * @return array<string>
@@ -60,7 +68,7 @@ class User extends BaseUser {
     }
     return $roles;
   }
-
+  
   /**
    *
    * @param array<string> $rolesString
@@ -70,7 +78,7 @@ class User extends BaseUser {
     $this->roles = Role::createFromValues($uniqueRoles);
     return $this;
   }
-
+  
   public function addRole(string $role_string): self {
     $role = $this->retriveRoleEnum($role_string);
     if (! $this->hasRole($role)) {
@@ -78,25 +86,25 @@ class User extends BaseUser {
     }
     return $this;
   }
-
+  
   public function removeRole(string $role_string): self {
     $role = $this->retriveRoleEnum($role_string);
     $this->roles = array_values(array_filter($this->roles, fn ($r) => $r !== $role));
     return $this;
   }
-
+  
   public function isModerator(): bool {
     return $this->hasRole(Role::ROLE_MODERATOR) || $this->hasRole(Role::ROLE_ADMIN) || $this->hasRole(Role::ROLE_SUPER_ADMIN);
   }
-
+  
   public function isAdmin(): bool {
     return $this->hasRole(Role::ROLE_ADMIN) || $this->hasRole(Role::ROLE_SUPER_ADMIN);
   }
-
+  
   public function isSuperAdmin(): bool {
     return $this->hasRole(Role::ROLE_SUPER_ADMIN);
   }
-
+  
   public function hasRole(Role|RoleInterface $role): bool {
     foreach ($this->roles as $r) {
       if ($r->getValue() === $role->getValue()) {
@@ -105,7 +113,7 @@ class User extends BaseUser {
     }
     return false;
   }
-
+  
   public function retriveRoleEnum(string $role_string): Role {
     try {
       $role = Role::createFromValue($role_string);
