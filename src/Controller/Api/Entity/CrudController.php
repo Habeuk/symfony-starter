@@ -24,7 +24,7 @@ use Habeuk\HbkSymfony\EntityPolicy\EntityAccessChecker;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 
 #[IsGranted('ROLE_USER')]
-#[Route('/api/crud/{companyId}')]
+#[Route('/api/crud')]
 final class CrudController extends BaseApiCrud {
 
   function __construct(EntityManagerInterface $entityManager, FrontendFormConfig $frontendFormConfig, EntityReferenceResolver $entityResolver,
@@ -35,7 +35,7 @@ final class CrudController extends BaseApiCrud {
   #[Route('/search/{entityName}', name: 'api_search_entities', methods: [
     'GET'
   ])]
-  public function search(int $companyId, string $entityName, Request $request, #[CurrentUser] User $user, EntitySearchService $searchService): JsonResponse {
+  public function search(string $entityName, Request $request, #[CurrentUser] User $user, EntitySearchService $searchService): JsonResponse {
     if (! $this->baseValidation($entityName))
       return $this->json([
         'error' => 'Entity/Dto not found : ' . $entityName
@@ -65,7 +65,7 @@ final class CrudController extends BaseApiCrud {
   #[Route('/entity/delete/{entityType}/{id}', name: 'api_entity_delete', methods: [
     'DELETE'
   ])]
-  function deleteEntity(int $companyId, string $entityType, int|string $id, #[CurrentUser] User $user, ObjectMapperInterface $objectMapper): JsonResponse {
+  function deleteEntity(string $entityType, int|string $id, #[CurrentUser] User $user, ObjectMapperInterface $objectMapper): JsonResponse {
     if (! $this->baseValidation($entityType))
       return $this->json([
         'error' => 'Entity/Dto not found : ' . $entityType
@@ -102,7 +102,7 @@ final class CrudController extends BaseApiCrud {
   #[Route('/entity/load-edit/{entityType}/{id}', name: 'api_entity_load', methods: [
     'GET'
   ])]
-  function loadEntity(int $companyId, string $entityType, int $id, #[CurrentUser] User $user, ObjectMapperInterface $objectMapper): JsonResponse {
+  function loadEntity(string $entityType, int $id, #[CurrentUser] User $user, ObjectMapperInterface $objectMapper): JsonResponse {
     if (! $this->baseValidation($entityType))
       return $this->json([
         'error' => 'Entity/Dto not found : ' . $entityType
@@ -145,8 +145,8 @@ final class CrudController extends BaseApiCrud {
     'POST',
     'OPTIONS'
   ])]
-  function saveEntity(int $companyId, string $entityType, Request $request, #[CurrentUser] User $user, ObjectMapperInterface $objectMapper): JsonResponse {
-    return $this->save($companyId, $entityType, $request, $user, $objectMapper);
+  function saveEntity(string $entityType, Request $request, #[CurrentUser] User $user, ObjectMapperInterface $objectMapper): JsonResponse {
+    return $this->save($entityType, $request, $user, $objectMapper);
   }
 
   /**
@@ -165,7 +165,7 @@ final class CrudController extends BaseApiCrud {
     'POST',
     'OPTIONS'
   ])]
-  function saveEntitiesMass(int $companyId, string $entityType, Request $request, #[CurrentUser] User $user, ObjectMapperInterface $objectMapper): JsonResponse {
-    return $this->saveEntities($companyId, $entityType, $request, $user, $objectMapper);
+  function saveEntitiesMass(string $entityType, Request $request, #[CurrentUser] User $user, ObjectMapperInterface $objectMapper): JsonResponse {
+    return $this->saveEntities($entityType, $request, $user, $objectMapper);
   }
 }

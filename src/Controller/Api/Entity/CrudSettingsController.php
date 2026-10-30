@@ -28,14 +28,14 @@ use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 #[IsGranted('ROLE_USER')]
 #[Route('/api/settings/crud')]
 final class CrudSettingsController extends BaseApiCrud {
-  
+
   #[Route('/save-config', name: 'api_setting_entity_save', methods: [
     'POST'
   ])]
   function saveCompanySetting(Request $request, #[CurrentUser] User $user, ObjectMapperInterface $objectMapper): JsonResponse {
     return $this->json(null);
   }
-  
+
   #[Route('/load-config/{configKey}', name: 'api_setting_entity_load', methods: [
     'GET'
   ])]

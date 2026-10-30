@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 #[IsGranted('ROLE_USER')]
 #[Route('/api/entity-collection')]
 final class CollectionController extends BaseApiCrud {
-  
+
   #[Route('/{entityType}/{page}/{limit}', name: 'api_load_entities', methods: [
     'GET'
   ])]
@@ -24,7 +24,7 @@ final class CollectionController extends BaseApiCrud {
       return $this->json([
         'error' => 'Entity/Dto not found : ' . $entityType
       ], Response::HTTP_PRECONDITION_FAILED);
-    
+
     if ($this->entityClass !== null && $this->entityDtoClass !== null) {
       $access = $this->entityAccessChecker->check($this->entityClass, $user, PermissionEnum::VIEW);
       if (! $access->granted) {
