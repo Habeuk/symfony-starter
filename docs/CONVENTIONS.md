@@ -2,6 +2,9 @@
 
 > Règles à respecter pour toute modification ou ajout.
 > L'agent IA (ou développeur) DOIT lire ce fichier avant de coder.
+>
+> Ce document est **générique** : les chemins et les exemples s'appliquent à tout
+> projet démarré depuis `habeuk/symfony-starter`.
 
 ---
 
@@ -24,13 +27,18 @@
 4. **Langue du code** : identifiants techniques en **anglais**, commentaires et
    libellés métier en **français**.
 
+5. **Style de code** : respecter le standard Symfony (règles `@Symfony` de
+   php-cs-fixer). Si `friendsofphp/php-cs-fixer` est installé :
+   `vendor/bin/php-cs-fixer fix`.
+
 ---
 
 ## 🏛️ Socle de code
 
-Chaque projet s'appuie sur un **socle maison**.
-Sur les projets de ce dépôt, le socle est `Habeuk\HbkSymfony`
-(`vendor/habeuk/habeuk_base_symfony/`).
+Tout projet démarré depuis le starter s'appuie sur un **socle maison** :
+`Habeuk\HbkSymfony` (`vendor/habeuk/habeuk_base_symfony/`).
+Le starter installe également `habeuk/file-uploader-bundle`, `habeuk/url-alias-bundle`
+et `habeuk/ai-agent-bundle`.
 
 | Besoin | À utiliser (socle) | À ne pas faire |
 | --- | --- | --- |
@@ -63,8 +71,8 @@ Chaque fonctionnalité livrée = **3 mises à jour obligatoires** :
 > est décrite dans `docs/index.md`. **Ne pas la dupliquer ici** : ce document décrit
 > l'obligation, `index.md` en décrit la forme.
 >
-> Si `docs/features/_TEMPLATE.md` n'existe pas encore, le créer lors de la première
-> livraison concernée.
+> Les modèles sont fournis : `docs/features/_TEMPLATE.md`,
+> `docs/tests/_TEMPLATE.md` et `docs/entites/_TEMPLATE.md`.
 
 ### 🧪 Documentation des tests
 
@@ -74,8 +82,8 @@ Chaque fichier de test fait l'objet d'une fiche Markdown, rangée **par domaine,
 
 *Exemple* :
 
-    docs/tests/User/Functional/AnonymousPreInscriptionTest.md
-    ↔ tests/Functional/User/AnonymousPreInscriptionTest.php
+    docs/tests/Invoice/Functional/CreateInvoiceTest.md
+    ↔ tests/Functional/Invoice/CreateInvoiceTest.php
 
 > Le nom de la fiche reprend celui du fichier de test, **sans** l'extension `.php`.
 
@@ -87,25 +95,26 @@ Chaque fichier de test fait l'objet d'une fiche Markdown, rangée **par domaine,
 
 Toute entité applicative :
 
-1. `extends Habeuk\HbkSymfony\Shared\Doctrine\AbstractBaseEntity` ;
+1. `extends Habeuk\HbkSymfony\Shared\Doctrine\AbstractBaseEntity`
+   — ou `BaseUser` pour l'entité utilisateur, qui en hérite ;
 2. porte `#[ORM\Entity(repositoryClass: XRepository::class)]` ;
 3. porte `#[ORM\Table(name: 'x')]` — **snake_case, singulier, sans préfixe** ;
-4. porte `#[ORM\HasLifecycleCallbacks]` — **obligatoire**, sinon les callbacks définis
-   dans les traits (`PrePersist`, `PreUpdate`) sont purement et simplement ignorés ;
+4. porte `#[ORM\HasLifecycleCallbacks]` — **obligatoire** dès que l'entité utilise un
+   trait avec callbacks (`PrePersist`, `PreUpdate`), sinon ces callbacks sont ignorés ;
 5. porte `#[MenuFrontendConfig(...)]` (voir § Contrôle d'accès) ;
 6. dispose de son **DTO** (`#[Map]` des deux côtés) et de son **Repository**
    (`extends BaseRepository`) ;
 7. utilise les **traits du socle** au lieu de redéclarer `id`, `createdAt`, `owner`, `status`.
 
-> `TimestampableTrait` déclare `createdAt` / `updatedAt` **non nullables et non
-> initialisées** : un constructeur qui les renseigne est obligatoire, sinon toute
-> instanciation lève une erreur de propriété non initialisée.
+> `TimestampableTrait` déclare `createdAt` / `updatedAt` typées et non initialisées :
+> elles sont renseignées par les callbacks `PrePersist` / `PreUpdate`, d'où l'obligation
+> de `#[ORM\HasLifecycleCallbacks]` sur la classe finale.
 
 ### Traits du socle
 
 | Trait | Quand l'utiliser | Contrainte |
 | --- | --- | --- |
-| `TimestampableTrait` | dès que la donnée est datée | nécessite un constructeur initialisant les deux dates |
+| `TimestampableTrait` | dès que la donnée est datée | dates renseignées par les callbacks ; `#[ORM\HasLifecycleCallbacks]` obligatoire |
 | `UuidTrait` | donnée exposée en URL ou exportée (RGPD, API publique) | ajoute `uuid` unique, généré en `PrePersist` |
 | `OwnerTrait` | donnée rattachée à un utilisateur | implique `OwnerInterface` + filtre de visibilité |
 | `StatusTrait` | activation / désactivation | ⚠ `status` vaut **`false`** par défaut → forcer la valeur voulue dans le constructeur |
@@ -119,14 +128,14 @@ Toute entité applicative :
 
 | Objet | Convention | Exemple |
 | --- | --- | --- |
-| Table | snake_case, singulier, quotée si mot réservé SQL | `` `user` ``, `product`, `nutrition_fact` |
-| Colonne | snake_case | `created_at`, `nutri_score` |
-| Clé étrangère (colonne) | `<relation>_id` | `owner_id`, `product_id` |
-| Table pivot | `<table_a>_<table_b>`, ordre alphabétique | `product_allergen` |
-| Index | `IDX_<TABLE>_<COLONNE>` | `IDX_PRODUCT_BARCODE` |
+| Table | snake_case, singulier, quotée si mot réservé SQL | `` `user` ``, `article`, `order_line` |
+| Colonne | snake_case | `created_at`, `unit_price` |
+| Clé étrangère (colonne) | `<relation>_id` | `owner_id`, `category_id` |
+| Table pivot | `<table_a>_<table_b>`, ordre alphabétique | `article_tag` |
+| Index | `IDX_<TABLE>_<COLONNE>` | `IDX_ARTICLE_REFERENCE` |
 | Contrainte unique | `UNIQ_<TABLE>_<COLONNE>` | `UNIQ_USER_EMAIL` |
-| Clé étrangère (nom) | `FK_<TABLE>_<COLONNE>` | `FK_PRODUCT_FOOD_FAMILY_ID` |
-| Entité / DTO / Repository | PascalCase, singulier, suffixe de rôle | `Product`, `ProductDto`, `ProductRepository` |
+| Clé étrangère (nom) | `FK_<TABLE>_<COLONNE>` | `FK_ARTICLE_CATEGORY_ID` |
+| Entité / DTO / Repository | PascalCase, singulier, suffixe de rôle | `Article`, `ArticleDto`, `ArticleRepository` |
 
 ### Migrations
 
@@ -136,28 +145,30 @@ Toute entité applicative :
 
 ### Types et choix de stockage
 
-- **Dates** : `Types::DATETIME_IMMUTABLE` (soit `timestamp with time zone` en PostgreSQL).
+- **Dates** : `Types::DATETIME_IMMUTABLE`.
 - **Montants, mesures, pourcentages** : `DECIMAL(p, s)`, **jamais `FLOAT`**
-  (erreurs d'arrondi inacceptables sur des montants ou des valeurs nutritionnelles).
+  (erreurs d'arrondi inacceptables sur des montants ou des mesures).
+- **Listes ouvertes** : `JSON` / `JSONB` lorsque le SGBD le permet, plutôt qu'une
+  table dédiée dont le schéma serait figé trop tôt.
 - Un **enum PHP** doit implémenter `BaseEnumInterface`.
-
 
 ### Suppression des données
 
 - **Par défaut : on ne supprime pas**, on désactive (`StatusTrait`).
 - `ON DELETE CASCADE` **uniquement** pour les données filles d'un utilisateur
-  (favoris, historiques) — leur disparition va de soi.
-- `ON DELETE SET NULL` pour les références de traçabilité (`createdBy`, `moderatedBy`).
+  (favoris, historiques, préférences) — leur disparition va de soi.
+- `ON DELETE SET NULL` pour les références de traçabilité (`createdBy`, `updatedBy`).
 - `ON DELETE RESTRICT` (comportement par défaut) pour tout référentiel partagé.
 
 ### Relations
 
 - Toujours mapper **les deux côtés** d'une relation `OneToMany` / `ManyToOne`
-  (`inversedBy` / `mappedBy`) et déclarer le côté propriétaire implicitement.
+  (`inversedBy` / `mappedBy`) et déclarer explicitement le côté propriétaire
+  (`ManyToOne`).
 - Les collections sont initialisées dans le constructeur
   (`new ArrayCollection()`), jamais laissées nulles.
-- Fournir les méthodes `add…` / `remove…` symétriques, jamais un setter de collection 
-  qui écrase la collection existante (On doit revenir completer cette partie plustard avec un exemple).
+- Fournir les méthodes `add…` / `remove…` symétriques, jamais un setter de collection
+  qui écrase la collection existante.
 - Les associations exposées au front sont annotées
   `#[EntityReference(Target::class, 'name')]` ou
   `#[EntityCollectionReference(Target::class, 'name')]`.
@@ -173,9 +184,9 @@ Toute entité exposée à l'interface porte `#[MenuFrontendConfig]` :
 ```php
 #[MenuFrontendConfig(
   enabled: true,
-  label: "Produits",            // libellé français affiché dans le menu
-  entity: "Product",
-  icon: "pi pi-box",
+  label: "Articles",            // libellé français affiché dans le menu
+  entity: "Article",
+  icon: "pi pi-file",
   order: 10,
   scope: ScopeEnum::GLOBAL,     // QUI VOIT
   requireOwnership: false,      // QUI MODIFIE
@@ -183,6 +194,9 @@ Toute entité exposée à l'interface porte `#[MenuFrontendConfig]` :
   cardinality: MenuFrontendConfig::UNLIMITED,
 )]
 ```
+
+> Autres paramètres disponibles : `roles`, `display`, `parentEntity`, `auditable`,
+> `revisionable` — voir la docblock de `Habeuk\HbkSymfony\Attribute\MenuFrontendConfig`.
 
 ### `scope` — « qui voit »
 
@@ -201,6 +215,7 @@ Toute entité exposée à l'interface porte `#[MenuFrontendConfig]` :
 (la consultation reste régie par `scope`).
 
 **Cas particuliers :**
+
 - `scope: PERSONAL` → `requireOwnership` est **ignoré** (on est déjà propriétaire).
 - `scope: GLOBAL` + `permissions: [PermissionEnum::VIEW]` → référentiel public en lecture seule.
 
@@ -215,7 +230,7 @@ Conséquences pratiques :
 - entité avec `OwnerTrait` → implémenter `OwnerInterface`, le socle fournit le filtre ;
 - entité **sans propriétaire** (référentiel, contenu public) → **créer un
   `AbstractQueryVisibilityFilter` dédié** dans `src/Security/QueryFilter/Entity/`.
-  Il est pris en compte automatiquement (tag `app.query_visibility_filter`).
+  Il est pris en compte automatiquement (tag `app.query_visibility_filter`) ;
 - les tests d'accès **ne s'écrivent pas à la main** dans les contrôleurs : on s'appuie
   sur `EntityAccessChecker`.
 
@@ -247,7 +262,7 @@ Tout enum métier implémente `Habeuk\HbkSymfony\Enum\BaseEnumInterface` et util
 
 ## 🛡️ Sécurité et données personnelles
 
-Dès qu'une donnée personnelle ou de santé est manipulée :
+Dès qu'une donnée personnelle ou sensible est manipulée :
 
 - **Mots de passe** : uniquement via `UserPasswordHasherInterface` — **jamais** en clair,
   jamais en MD5/SHA1, jamais de comparaison `===` sur un mot de passe.

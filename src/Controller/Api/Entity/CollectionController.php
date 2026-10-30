@@ -13,18 +13,18 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 #[IsGranted('ROLE_USER')]
-#[Route('/api/entity-collection/{companyId}')]
+#[Route('/api/entity-collection')]
 final class CollectionController extends BaseApiCrud {
-
+  
   #[Route('/{entityType}/{page}/{limit}', name: 'api_load_entities', methods: [
     'GET'
   ])]
-  public function loadEntities(int $companyId, string $entityType, Request $request, #[CurrentUser] User $user, int $page = 1, int $limit = 30): JsonResponse {
+  public function loadEntities(string $entityType, Request $request, #[CurrentUser] User $user, int $page = 1, int $limit = 30): JsonResponse {
     if (! $this->baseValidation($entityType))
       return $this->json([
         'error' => 'Entity/Dto not found : ' . $entityType
       ], Response::HTTP_PRECONDITION_FAILED);
-
+    
     if ($this->entityClass !== null && $this->entityDtoClass !== null) {
       $access = $this->entityAccessChecker->check($this->entityClass, $user, PermissionEnum::VIEW);
       if (! $access->granted) {

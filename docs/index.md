@@ -1,8 +1,16 @@
-# Documentation — NutriGuide
+# Documentation du projet
 
-Index général de la documentation de développement du projet **NutriGuide**.
+Index général de la documentation de développement.
 
-Ce dossier (`rootapp/docs/`) est la source de vérité pour le suivi du développement :
+> **Documentation générique du starter.** Ce dossier est livré avec
+> [`habeuk/symfony-starter`](../README.md) et ne doit contenir aucun contenu propre
+> à un projet. À la création d'un projet, renseigner `<Projet>` ci-dessous et
+> remplacer les éléments entre chevrons (`<...>`) par les valeurs du projet.
+> L'organisation, elle, reste la même pour tous les projets issus du starter.
+
+**Projet :** `<Projet>` — à renseigner à la création du projet.
+
+Ce dossier (`docs/`) est la source de vérité pour le suivi du développement :
 règles de code, documentation des fonctionnalités et documentation des tests.
 Il s'adresse aux développeurs **et** à l'agent IA, qui doivent s'y référer avant de coder.
 
@@ -13,42 +21,50 @@ Il s'adresse aux développeurs **et** à l'agent IA, qui doivent s'y référer a
 | Ordre | Document | Rôle |
 | :---: | --- | --- |
 | 1 | [CONVENTIONS.md](CONVENTIONS.md) | Règles de code, conventions, obligations documentaires. **Lecture obligatoire avant toute modification.** |
-| 2 | Référentiel fonctionnel (voir § 2) | Objectifs, vision et périmètre du produit. |
-| 3 | [entites-module-01.md](entites-module-01.md) | Modèle de données du module 01 — **proposition à valider avant tout codage d'entité**. |
-| 4 | `docs/features/<Domaine>/` (voir § 3) | Fiches techniques des fonctionnalités livrées. |
-| 5 | `docs/tests/<Domaine>/<Type>/` (voir § 4) | Fiches de description des tests. |
+| 2 | `docs/fonctionnel/` (voir § 2) | Objectifs, vision et périmètre du produit. |
+| 3 | `docs/entites/` (voir § 3) | Modèle de données, **proposé et validé avant tout codage d'entité**. |
+| 4 | `docs/features/<Domaine>/` (voir § 4) | Fiches techniques des fonctionnalités livrées. |
+| 5 | `docs/tests/<Domaine>/<Type>/` (voir § 5) | Fiches de description des tests. |
 
 ---
 
 ## 2. Référentiel fonctionnel
 
-> Emplacement : `/siteweb/nutribeguide/docs/fonctionnal/` — **hors** de `rootapp/`, en lecture seule.
-> Chemin relatif depuis ce fichier : `../../docs/fonctionnal/`
+> Emplacement conventionnel : `docs/fonctionnel/` — **à créer lors de la première
+> livraison fonctionnelle**. Si le référentiel est maintenu hors du dépôt applicatif,
+> remplacer ce paragraphe par son chemin.
 
-- [Cahier des charges](../../docs/fonctionnal/cahier-des-charges.md)
-- [Synthèse exécutive](../../docs/fonctionnal/synthese-executive.md)
+Contenu attendu :
 
-### Modules fonctionnels
+- un cahier des charges et une synthèse exécutive ;
+- un document par module fonctionnel (`module-<NN>-<nom>.md`).
 
-- [Module 01 — Scan calories](../../docs/fonctionnal/module-01-scan-calories.md)
-- [Module 02 — Frigo](../../docs/fonctionnal/module-02-frigo.md)
-- [Module 03 — Plan de la semaine](../../docs/fonctionnal/module-03-plan-semaine.md)
-- [Module 04 — Budget](../../docs/fonctionnal/module-04-budget.md)
-- [Module 05 — Santé](../../docs/fonctionnal/module-05-sante.md)
-- [Module 06 — Famille](../../docs/fonctionnal/module-06-famille.md)
-- [Module 07 — Communauté](../../docs/fonctionnal/module-07-communaute.md)
+*Documents présents :* aucun pour le moment.
 
 ---
 
-## 3. Documentation des fonctionnalités
+## 3. Modèle de données
 
-> Emplacement : `docs/features/` — structure cible, **à créer au fil des livraisons**.
+> Emplacement : `docs/entites/` — **un document par module fonctionnel**, listant les
+> entités **avant** leur codage. Modèle : [`_TEMPLATE.md`](entites/_TEMPLATE.md).
+
+Chaque document est une **proposition soumise à validation** : aucune entité n'est
+codée avant validation. Il précise, pour chaque entité, les champs, les contraintes,
+les relations et les décisions à trancher.
+
+*Documents présents :* aucun pour le moment.
+
+---
+
+## 4. Documentation des fonctionnalités
+
+> Emplacement : `docs/features/` — un dossier par domaine, **créé au fil des livraisons**.
 
 ### Arborescence
 
 ```text
 docs/features/
-├── _TEMPLATE.md                  # Modèle de fiche technique
+├── _TEMPLATE.md                  # Modèle de fiche technique (fourni)
 └── <Domaine>/
     ├── index.md                  # Index des fonctionnalités du domaine
     ├── CHANGELOG.md              # Historique des évolutions du domaine
@@ -57,32 +73,25 @@ docs/features/
 
 ### Convention
 
-- Une fiche par sous-fonctionnalité, créée à partir de `docs/features/_TEMPLATE.md`.
-- Un dossier `features/<Domaine>/` par domaine métier (ex. `User`, `Product`, `Nutrition`…).
+- Une fiche par sous-fonctionnalité, créée à partir de [`_TEMPLATE.md`](features/_TEMPLATE.md).
+- Un dossier `features/<Domaine>/` par domaine métier (ex. `User`, `Invoice`, `Catalog`…).
 - Chaque domaine possède son propre `index.md` et son propre `CHANGELOG.md`.
 
 *Domaines documentés :* aucun pour le moment.
 
-### Modèle de données
-
-> Emplacement : `docs/` — un document par module fonctionnel, listant les entités **avant** leur codage.
-
-| Document | Module | Statut |
-| --- | :---: | --- |
-| [entites-module-01.md](entites-module-01.md) | 01 — Scan & Calories | Proposition à valider |
-
 ---
 
-## 4. Documentation des tests
+## 5. Documentation des tests
 
-> Emplacement : `docs/tests/` — structure cible, **à créer au fil des livraisons**.
+> Emplacement : `docs/tests/` — un dossier par domaine et par type de test, **créé au fil des livraisons**.
 
 ### Arborescence
 
 ```text
 docs/tests/
+├── _TEMPLATE.md                      # Modèle de fiche de test (fourni)
 └── <Domaine>/
-    └── <Type>/                          # Functional, Unit, Integration…
+    └── <Type>/                       # Functional, Unit, Integration…
         └── <NomFichierTest>.md
 ```
 
@@ -90,13 +99,14 @@ docs/tests/
 
 | Fiche de documentation | Fichier de test |
 | --- | --- |
-| `docs/tests/User/Functional/AnonymousPreInscriptionTest.md` | `tests/Functional/User/AnonymousPreInscriptionTest.php` |
+| `docs/tests/Invoice/Functional/CreateInvoiceTest.md` | `tests/Functional/Invoice/CreateInvoiceTest.php` |
 
 > Le nom de la fiche reprend celui du fichier de test, **sans** l'extension `.php`.
+> Modèle : [`_TEMPLATE.md`](tests/_TEMPLATE.md).
 
 ---
 
-## 5. Workflow d'une fonctionnalité
+## 6. Workflow d'une fonctionnalité
 
 Toute fonctionnalité livrée implique **3 mises à jour documentaires obligatoires** :
 
@@ -107,17 +117,24 @@ Toute fonctionnalité livrée implique **3 mises à jour documentaires obligatoi
    dans la section correspondante : `[Ajout]`, `[Modification]`, `[Correction]` ou `[Suppression]`.
 
 Si la fonctionnalité est couverte par des tests, ajouter la fiche correspondante
-dans `docs/tests/<Domaine>/<Type>/` (§ 4).
+dans `docs/tests/<Domaine>/<Type>/` (§ 5).
 
 ---
 
-## 6. Structure actuelle du dossier
+## 7. Structure du dossier
 
 ```text
-rootapp/docs/
+docs/
 ├── index.md                 # Ce fichier
 ├── CONVENTIONS.md           # Règles de code et conventions
-└── entites-module-01.md     # Modèle de données du module 01 (proposition)
+├── entites/
+│   └── _TEMPLATE.md         # Modèle de proposition de modèle de données
+├── features/
+│   └── _TEMPLATE.md         # Modèle de fiche technique
+├── tests/
+│   └── _TEMPLATE.md         # Modèle de fiche de test
+└── fonctionnel/             # À créer : référentiel fonctionnel
 ```
 
-> Les dossiers `features/` et `tests/` seront créés lors de la première livraison concernée.
+> Les dossiers `features/<Domaine>/`, `tests/<Domaine>/` et `fonctionnel/` sont créés
+> lors de la première livraison concernée.
