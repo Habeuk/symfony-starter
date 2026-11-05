@@ -4,7 +4,7 @@ parameters:
     paths:
         - src
         - tests
-        - vendor/habeuk
+        - vendor/habeuk/
     phpVersion: 80400
 
     # Doctrine
@@ -29,3 +29,9 @@ parameters:
     # Ignorer certaines erreurs (optionnel)
     ignoreErrors:
         # PHP 8.4 property hooks (pas encore totalement supportés)
+        -
+            identifier: doctrine.associationType
+            path: vendor/habeuk/habeuk_base_symfony/src/Shared/Doctrine/Traits/OwnerTrait.php
+        -
+            identifier: trait.unused
+            path: vendor/habeuk/url-alias-bundle/src/Shared/Doctrine/Traits/RecordsEventsTrait.php
